@@ -20,7 +20,7 @@ func main() {
 	a := app.NewWithID("YTDLP-GUI")
 	w := a.NewWindow("YTDLP GUI")
 	w.Resize(fyne.NewSize(640, 480))
-	exePath, _ := os.Executable()
+	exePath, _ := os.Executable()														
 	exeDir := filepath.Dir(exePath)
 	ytdlpPath := widget.NewEntry()
 	ytdlpPath.SetText(filepath.Join(exeDir, "yt-dlp.exe"))
@@ -126,6 +126,7 @@ func main() {
 
 	ytdlpPathSelect := widget.NewButtonWithIcon("Select yt-dlp executable", theme.FolderIcon(), func() {
 		fd := dialog.NewFileOpen(func(reader fyne.URIReadCloser, err error) {
+			defer reader.Close()
 			if err != nil || reader == nil {
 				return
 			}
