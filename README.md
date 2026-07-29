@@ -1,4 +1,4 @@
-# YT-DLP GUI
+# YTDLP GUI
 A YouTube video downloader
 ## Features
 - Custom Resolutions
