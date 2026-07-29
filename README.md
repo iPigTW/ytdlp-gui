@@ -1,2 +1,8 @@
 # YT-DLP GUI
-It's just a little gui for yt-dlp, it has few features.
+A YouTube video downloader
+## Features
+- Custom Resolutions
+- Audio Download
+## Requirements
+- FFmpeg
+- YT-DLP
