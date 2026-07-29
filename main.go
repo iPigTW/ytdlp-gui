@@ -6,6 +6,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"syscall"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -20,7 +21,7 @@ func main() {
 	a := app.NewWithID("YTDLP-GUI")
 	w := a.NewWindow("YTDLP GUI")
 	w.Resize(fyne.NewSize(640, 480))
-	exePath, _ := os.Executable()														
+	exePath, _ := os.Executable()
 	exeDir := filepath.Dir(exePath)
 	ytdlpPath := widget.NewEntry()
 	ytdlpPath.SetText(filepath.Join(exeDir, "yt-dlp.exe"))
@@ -93,8 +94,6 @@ func main() {
 	})
 	downloadBtn.Disable()
 
-
-
 	// only make the download button available when selected mp3 or selected mp4 and resolution
 	format.OnChanged = func(s string) {
 		if s == "mp3" {
@@ -120,7 +119,6 @@ func main() {
 	resolutionSelect.OnChanged = func(s string) {
 		downloadBtn.Enable()
 	}
-
 
 	downloadUI := container.NewVBox(outputPath, outputSelect, url, format, resolutionSelect, downloadBtn, downloadStatus)
 
@@ -158,6 +156,7 @@ func downloadVideo(ytdlpPath string, outputPath string, format string, ffmpegPat
 	cmd := exec.Command(ytdlpPath, "-P", outputPath, "-t", format, "--ffmpeg-location", ffmpegPath, "--extractor-args", "youtube:player_js_version=actual", "--no-check-certificate", url)
 	var stderr bytes.Buffer
 	cmd.Stderr = &stderr
+	cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
 	if err := cmd.Run(); err != nil {
 		return err
 	}
@@ -168,6 +167,7 @@ func downloadVideoWithResolution(ytdlpPath string, outputPath string, format str
 	cmd := exec.Command(ytdlpPath, "-P", outputPath, "-t", format, "-S", "res:"+strings.TrimSuffix(resolution, "p"), "--ffmpeg-location", ffmpegPath, "--extractor-args", "youtube:player_js_version=actual", "--no-check-certificate", url)
 	var stderr bytes.Buffer
 	cmd.Stderr = &stderr
+	cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
 	if err := cmd.Run(); err != nil {
 		return err
 	}
@@ -177,6 +177,7 @@ func downloadVideoWithResolution(ytdlpPath string, outputPath string, format str
 func getResolution(ytdlpPath string, url string) ([]string, error) {
 	var resolution []string
 	cmd := exec.Command(ytdlpPath, "-F", url)
+	cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
 	output, err := cmd.Output()
 	if err != nil {
 		return []string{}, nil
